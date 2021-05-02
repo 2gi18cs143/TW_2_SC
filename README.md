@@ -1,91 +1,64 @@
 # TW_2_SC
-// C++ program to search if a target node is reachable from
-// a source with given max depth.
-#include<bits/stdc++.h>
-using namespace std;
+# Python program to print DFS traversal from a given
+# given graph
+from collections import defaultdict
   
-// Graph class represents a directed graph using adjacency
-// list representation.
-class Graph
-{
-    int V;    // No. of vertices
+# This class represents a directed graph using adjacency
+# list representation
+class Graph:
   
-    // Pointer to an array containing
-    // adjacency lists
-    list<int> *adj;
+    def __init__(self,vertices):
   
-    // A function used by IDDFS
-    bool DLS(int v, int target, int limit);
+        # No. of vertices
+        self.V = vertices
   
-public:
-    Graph(int V);   // Constructor
-    void addEdge(int v, int w);
+        # default dictionary to store graph
+        self.graph = defaultdict(list)
   
-    // IDDFS traversal of the vertices reachable from v
-    bool IDDFS(int v, int target, int max_depth);
-};
+    # function to add an edge to graph
+    def addEdge(self,u,v):
+        self.graph[u].append(v)
   
-Graph::Graph(int V)
-{
-    this->V = V;
-    adj = new list<int>[V];
-}
+    # A function to perform a Depth-Limited search
+    # from given source 'src'
+    def DLS(self,src,target,maxDepth):
   
-void Graph::addEdge(int v, int w)
-{
-    adj[v].push_back(w); // Add w to v’s list.
-}
+        if src == target : return True
   
-// A function to perform a Depth-Limited search
-// from given source 'src'
-bool Graph::DLS(int src, int target, int limit)
-{
-    if (src == target)
-        return true;
+        # If reached the maximum depth, stop recursing.
+        if maxDepth <= 0 : return False
   
-    // If reached the maximum depth, stop recursing.
-    if (limit <= 0)
-        return false;
+        # Recur for all the vertices adjacent to this vertex
+        for i in self.graph[src]:
+                if(self.DLS(i,target,maxDepth-1)):
+                    return True
+        return False
   
-    // Recur for all the vertices adjacent to source vertex
-    for (auto i = adj[src].begin(); i != adj[src].end(); ++i)
-       if (DLS(*i, target, limit-1) == true)
-          return true;
+    # IDDFS to search if target is reachable from v.
+    # It uses recursive DLS()
+    def IDDFS(self,src, target, maxDepth):
   
-     return false;
-}
+        # Repeatedly depth-limit search till the
+        # maximum depth
+        for i in range(maxDepth):
+            if (self.DLS(src, target, i)):
+                return True
+        return False
   
-// IDDFS to search if target is reachable from v.
-// It uses recursive DFSUtil().
-bool Graph::IDDFS(int src, int target, int max_depth)
-{
-    // Repeatedly depth-limit search till the
-    // maximum depth.
-    for (int i = 0; i <= max_depth; i++)
-       if (DLS(src, target, i) == true)
-          return true;
+# Create a graph given in the above diagram
+g = Graph (7);
+g.addEdge(0, 1)
+g.addEdge(0, 2)
+g.addEdge(1, 3)
+g.addEdge(1, 4)
+g.addEdge(2, 5)
+g.addEdge(2, 6)
   
-    return false;
-}
+target = 6; maxDepth = 3; src = 0
   
-// Driver code
-int main()
-{
-    // Let us create a Directed graph with 7 nodes
-    Graph g(7);
-    g.addEdge(0, 1);
-    g.addEdge(0, 2);
-    g.addEdge(1, 3);
-    g.addEdge(1, 4);
-    g.addEdge(2, 5);
-    g.addEdge(2, 6);
-  
-    int target = 6, maxDepth = 3, src = 0;
-    if (g.IDDFS(src, target, maxDepth) == true)
-        cout << "Target is reachable from source "
-                "within max depth";
-    else
-        cout << "Target is NOT reachable from source "
-                "within max depth";
-    return 0;
-}
+if g.IDDFS(src, target, maxDepth) == True:
+    print ("Target is reachable from source " +
+        "within max depth")
+else :
+    print ("Target is NOT reachable from source " +
+        "within max depth")
